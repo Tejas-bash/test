@@ -10,12 +10,12 @@ SECRET_KEY = "hardcoded_secret_123"  # CodeQL will flag this as a hardcoded secr
 @app.route("/user/<user_id>")
 def get_user(user_id):
     # UNSAFE: Directly concatenating user input into the SQL query
-    query = f"SELECT * FROM users WHERE id = {user_id}"
+    query = "SELECT * FROM users WHERE id = ?"
     conn = sqlite3.connect("test.db")
     cursor = conn.cursor()
 
     try:
-        cursor.execute(query)
+        cursor.execute(query, (user_id,))
         user = cursor.fetchone()
         if user:
             return jsonify({"user": user})
