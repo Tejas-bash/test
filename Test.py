@@ -39,11 +39,18 @@ def submit():
 def run_command():
     command = request.form.get("command")
 
-    # UNSAFE: Running shell commands with user input
-    import os
-    os.system(command)  # CodeQL will flag this as insecure
+    # SAFE: Use an allowlist of commands
+    ALLOWED_COMMANDS = {
+        "list": "ls",
+        "status": "status"
+    }
 
-    return "Command executed!"
+    if command in ALLOWED_COMMANDS:
+        import os
+        os.system(ALLOWED_COMMANDS[command])
+        return "Command executed!"
+    else:
+        return "Invalid command", 400
 
 # Insecure hash algorithm
 @app.route("/hash", methods=["POST"])
